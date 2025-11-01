@@ -54,8 +54,12 @@ async def userinfo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Handler for PDF documents: processes the writeup submission request.
 async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    chat_id = update.effective_chat.id
+    chat = update.effective_chat
     file = update.message.document
+
+    # Avoid processing PDFs sent in the group.
+    if chat.type != 'private':
+        return
 
     data = load_data()
 
@@ -129,7 +133,7 @@ async def handle_decision(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if decision == "accept":
         try:
             group_id = int(os.getenv("GROUP_ID"))
-            await context.bot.add_chat_members(chat_id=group_id, user_ids=[user_id])
+            await context.bot.add_chat_member(chat_id=group_id, user_id=user_id)
             await context.bot.send_message(
                 chat_id=user_id,
                 text="🎉 ¡Tu writeup ha sido aceptado! Ya formas parte de Hackiit."
