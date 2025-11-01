@@ -1,0 +1,9 @@
+services:
+  hackiit-bot:
+    build: .
+    container_name: hackiit-bot
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
